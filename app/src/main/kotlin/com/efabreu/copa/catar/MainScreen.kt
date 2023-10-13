@@ -34,40 +34,44 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.efabreu.copa.catar.domain.model.Match
-import com.efabreu.copa.catar.domain.model.Stadium
-import com.efabreu.copa.catar.domain.model.Team
 import com.efabreu.copa.catar.extensions.formatComp
-import com.efabreu.copa.catar.ui.theme.Copa2022Theme
-import java.time.LocalDateTime
+import kotlin.reflect.KFunction1
 
 @Composable
-fun MainScreen(matches :List<Match>) {
+fun MainScreen(
+    matches: List<Match>,
+    toggleNotification: (Match) -> Unit,
+    setCalendarEvent: KFunction1<Match, Unit>
+) {
     Box(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        MatchesList(matches = matches)
+        MatchesList(matches = matches, toggleNotification, setCalendarEvent)
     }
 }
 
 @Composable
-fun MatchesList(matches :List<Match>){
+fun MatchesList(
+    matches: List<Match>,
+    toggleNotification: (Match) -> Unit,
+    setCalendarEvent: (Match) -> Unit
+){
     LazyColumn(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),){
         items(matches){ match ->
-            MatchCard(match)
+            MatchCard(match, toggleNotification, setCalendarEvent)
         }
     }
 }
 
 @Composable
-fun MatchCard(match: Match) {
+fun MatchCard(match: Match, toggleNotification: (Match) -> Unit, setCalendarEvent: (Match) -> Unit) {
     ElevatedCard(modifier = Modifier
         .fillMaxWidth()
         .height(250.dp),
@@ -81,8 +85,8 @@ fun MatchCard(match: Match) {
                 modifier = Modifier.height(150.dp)
             )
             Column (modifier = Modifier.align(Alignment.TopEnd)){
-                Notification(match)
-                Calendar(match)
+                Notification(match, toggleNotification)
+                Calendar(match, setCalendarEvent)
             }
         }
         Box(modifier = Modifier.padding(8.dp)){
@@ -121,7 +125,7 @@ private fun MatchData(match: Match) {
 }
 
 @Composable
-private fun Notification(match: Match) {
+private fun Notification(match: Match, toggleNotification: (Match) -> Unit) {
     Column(modifier = Modifier.padding(12.dp)) {
         val drwSource =
             if (match.notificationEnabled) R.drawable.notifications_active else R.drawable.notifications_none
@@ -130,7 +134,7 @@ private fun Notification(match: Match) {
             contentDescription = stringResource(id = R.string.description_notification),
             colorFilter = ColorFilter.tint(Color.White),
             modifier = Modifier
-                .clickable { }
+                .clickable { toggleNotification(match) }
                 .size(24.dp)
                 .clip(CircleShape),
         )
@@ -138,14 +142,14 @@ private fun Notification(match: Match) {
 }
 
 @Composable
-private fun Calendar(match: Match) {
+private fun Calendar(match: Match, setCalendarEvent: (Match) -> Unit) {
     Column(modifier = Modifier.padding(12.dp)) {
         Image(
             painter = painterResource(id = R.drawable.edit_calendar),
             contentDescription = stringResource(id = R.string.description_calendar),
             colorFilter = ColorFilter.tint(Color.White),
             modifier = Modifier
-                .clickable { }
+                .clickable { setCalendarEvent(match) }
                 .size(24.dp)
                 .clip(CircleShape),
         )
@@ -182,20 +186,21 @@ fun CustomLinearProgressIndicator(
     }
 }
 
-@Composable
-@Preview(showBackground = true)
-fun DefaultPreview() {
-    Copa2022Theme {
-        MatchCard(match = Match(
-            id="BR-RS",
-            name="1ª RODADA",
-            stadium=Stadium(name="LUSAIL", image="https://digitalinnovationone.github.io/copa-2022-android/statics/lusali-stadium.png"),
-            team1=Team(flag="🇧🇷", displayName="BRA"),
-            team2=Team(flag="🇷🇸", displayName="SRB"),
-            date=LocalDateTime.now(),
-            notificationEnabled=false)
-            )
-
-
-    }
-}
+//@Composable
+//@Preview(showBackground = true)
+//fun DefaultPreview() {
+//    Copa2022Theme {
+//        MatchCard(
+//            match = Match(
+//                id="BR-RS",
+//                name="1ª RODADA",
+//                stadium=Stadium(name="LUSAIL", image="https://digitalinnovationone.github.io/copa-2022-android/statics/lusali-stadium.png"),
+//                team1=Team(flag="🇧🇷", displayName="BRA"),
+//                team2=Team(flag="🇷🇸", displayName="SRB"),
+//                date=LocalDateTime.now(),
+//                notificationEnabled=false)
+//        )
+//
+//
+//    }
+//}

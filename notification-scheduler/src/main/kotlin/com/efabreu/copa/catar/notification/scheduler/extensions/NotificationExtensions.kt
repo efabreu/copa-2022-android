@@ -12,7 +12,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.efabreu.copa.catar.notification.scheduler.R
 
-private const val CHANNEL_ID = "new_channel_video"
+private const val CHANNEL_ID = "world_cup_match"
 private const val NOTIFICATION_NAME = "Notificações"
 private const val NOTIFICATION_INTENT_REQUEST_CODE = 0
 
