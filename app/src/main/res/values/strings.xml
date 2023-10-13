@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Copa 2022</string>
+    <string name="description_notification">Ligar ou desligar notificacoes.</string>
+    <string name="description_calendar">Adicionar ao calendário.</string>
 </resources>
