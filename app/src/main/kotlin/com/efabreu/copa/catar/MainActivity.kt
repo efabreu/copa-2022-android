@@ -1,8 +1,6 @@
 package com.efabreu.copa.catar
 
-import android.content.Intent
 import android.os.Bundle
-import android.provider.CalendarContract
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -18,7 +16,6 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : ComponentActivity(), LifecycleObserver {
 
-    lateinit var listaJogos :List<Match>
     private val viewModel by viewModels<MainViewModel>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,9 +24,11 @@ class MainActivity : ComponentActivity(), LifecycleObserver {
         setContent {
             Copa2022Theme {
                 val state by viewModel.state.collectAsState()
+
                 MainScreen(matches = state.matches,
                     viewModel::toggleNotification,
-                    setCalendarEvent = ::setCalendarEvent)
+                    setCalendarEvent = ::setCalendarEvent
+                )
             }
         }
     }
@@ -45,14 +44,7 @@ class MainActivity : ComponentActivity(), LifecycleObserver {
         }
     }
     private fun setCalendarEvent(match: Match){
-        val calendarIntent = Intent(Intent.ACTION_INSERT)
-        calendarIntent.data = CalendarContract.Events.CONTENT_URI
-        calendarIntent.putExtra(CalendarContract.Events.TITLE, "Copa do mundo - ${match.team1.displayName} X ${match.team2.displayName}")
-        calendarIntent.putExtra(CalendarContract.Events.DESCRIPTION, "Jogo da copa do mundo, ${match.name}, entre ${match.team1.displayName} e ${match.team2.displayName}")
-        calendarIntent.putExtra(CalendarContract.Events.ALL_DAY, true)
-        calendarIntent.putExtra(CalendarContract.Events.EVENT_LOCATION, match.stadium.name)
-        calendarIntent.putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, match.date)
-        this.startActivity(calendarIntent)
+        this.startActivity(viewModel.onClickNewCalendarEvent(match))
     }
 
 }

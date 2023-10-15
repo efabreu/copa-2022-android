@@ -1,5 +1,7 @@
 package com.efabreu.copa.catar
 
+import android.content.Intent
+import android.provider.CalendarContract
 import androidx.lifecycle.viewModelScope
 import com.efabreu.copa.catar.core.BaseViewModel
 import com.efabreu.copa.catar.domain.model.Match
@@ -15,6 +17,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
+
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
@@ -61,6 +64,17 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    fun onClickNewCalendarEvent(match :Match) :Intent{
+        val calendarIntent = Intent(Intent.ACTION_INSERT)
+        calendarIntent.data = CalendarContract.Events.CONTENT_URI
+        calendarIntent.putExtra(CalendarContract.Events.TITLE, "Copa do mundo - ${match.team1.displayName} X ${match.team2.displayName}")
+        calendarIntent.putExtra(CalendarContract.Events.DESCRIPTION, "Jogo da copa do mundo, ${match.name}, entre ${match.team1.displayName} e ${match.team2.displayName}")
+        calendarIntent.putExtra(CalendarContract.Events.ALL_DAY, true)
+        calendarIntent.putExtra(CalendarContract.Events.EVENT_LOCATION, match.stadium.name)
+        calendarIntent.putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, match.date)
+        return calendarIntent
+    }
+
 }
 
 data class UiState (
@@ -69,7 +83,7 @@ data class UiState (
 
 sealed interface UiAction {
     data class NoMatchesFound (val message :String) :UiAction
-    object EmptyState : UiAction
+    data object EmptyState :UiAction
     data class TurnNotificationOn (val match :Match) :UiAction
     data class TurnNotificationOff (val match :Match) :UiAction
 }
